@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Animal Roles — Task Hub</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root{
+      --bg:#0c1020; --panel:#151a30; --panel2:#1c2340; --text:#f6f7fb;
+      --muted:#9aa3bd; --accent:#7c5cff; --accent2:#28d7b0; --line:#2a3358;
+    }
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(124,92,255,.22), transparent 32%),
+        radial-gradient(circle at 90% 15%, rgba(40,215,176,.16), transparent 28%),
+        var(--bg);
+      color:var(--text); min-height:100vh;
+    }
+    header{
+      padding:22px 28px; border-bottom:1px solid var(--line);
+      background:rgba(12,16,32,.82); backdrop-filter:blur(14px);
+      position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:20px;
+    }
+    header h1{ margin:0; font-size:24px; }
+    header p{ margin:5px 0 0; color:var(--muted); font-size:13px; }
+    .nav{ margin-left:auto; }
+    .nav a{
+      color:#fff; text-decoration:none; background:#222b4a;
+      padding:10px 14px; border-radius:12px; font-weight:800;
+    }
+    .wrap{ max-width:900px; margin:28px auto; padding:0 20px; }
+    .card{
+      background:rgba(21,26,48,.92); border:1px solid var(--line);
+      border-radius:18px; box-shadow:0 16px 48px rgba(0,0,0,.22);
+    }
+    .tabs{
+      display:flex; gap:8px; padding:14px; border-bottom:1px solid var(--line);
+      flex-wrap:wrap;
+    }
+    .tab{
+      border:1px solid var(--line); background:#11172a; color:var(--muted);
+      border-radius:999px; padding:9px 14px; cursor:pointer; font-weight:700;
+    }
+    .tab.active{ background:var(--accent); color:#fff; border-color:transparent; }
+    .task{ display:none; padding:22px; }
+    .task.active{ display:block; }
+    .role{
+      display:flex; align-items:center; gap:16px; margin-bottom:18px; padding:16px;
+      background:var(--panel2); border:1px solid var(--line); border-radius:14px;
+    }
+    .emoji{ font-size:54px; }
+    .role h2{ margin:0 0 4px; }
+    .role p{ margin:0; color:var(--muted); }
+    .question{
+      margin-top:18px; padding:16px; border-left:4px solid var(--accent2);
+      background:#11172a; border-radius:10px;
+    }
+    label{ display:block; margin:16px 0 7px; font-weight:750; }
+    textarea{
+      width:100%; min-height:105px; resize:vertical; padding:12px;
+      border-radius:12px; border:1px solid var(--line); background:#0e1427;
+      color:var(--text); font:inherit; outline:none;
+    }
+    textarea:focus{ border-color:var(--accent); }
+    .btn{
+      margin-top:15px; border:0; padding:11px 16px; border-radius:12px;
+      background:linear-gradient(90deg,var(--accent),#9b6cff);
+      color:#fff; font-weight:800; cursor:pointer;
+    }
+    .btn.secondary{ background:#222b4a; margin-left:8px; }
+    .status{ color:var(--accent2); margin-top:10px; min-height:20px; font-size:13px; }
+    .note{ margin-top:14px; font-size:12px; color:var(--muted); }
+  </style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Animal Roles — Task Hub</h1>
+    <p>Choose a task, answer from the assigned animal role, and submit your responses.</p>
+  </div>
+  <div class="nav">
+    <a href="chat.html" target="_blank">Open Global Chat</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="card">
+    <div class="tabs" id="tabs"></div>
+    <div id="tasks"></div>
+  </section>
+</div>
+
+<script>
+const tasks = [
+  {name:"Task 1", animal:"Fox", emoji:"🦊"},
+  {name:"Task 2", animal:"Crow", emoji:"🐦‍⬛"},
+  {name:"Task 3", animal:"Raccoon", emoji:"🦝"},
+  {name:"Task 4", animal:"Cat", emoji:"🐈"},
+  {name:"Task 5", animal:"Wolf", emoji:"🐺"},
+  {name:"Task 6", animal:"Mosquito", emoji:"🦟"},
+  {name:"Task 7", animal:"Cockroach", emoji:"🪳"},
+  {name:"Task 8", animal:"Scorpion", emoji:"🦂"},
+  {name:"Task 9", animal:"Black Widow Spider", emoji:"🕷️"},
+  {name:"Task 10", animal:"Rattlesnake", emoji:"🐍"},
+  {name:"Task 11", animal:"Poison Dart Frog", emoji:"🐸"},
+  {name:"Task 12", animal:"Cone Snail", emoji:"🐌"},
+  {name:"Task 13", animal:"Blue-Ringed Octopus", emoji:"🐙"},
+  {name:"Task 14", animal:"Centipede", emoji:"🐛"},
+  {name:"Task 15", animal:"Hornet", emoji:"🐝"}
+];
+
+const tabs = document.getElementById("tabs");
+const tasksBox = document.getElementById("tasks");
+
+function renderTasks(){
+  tasks.forEach((t,i)=>{
+    const tab = document.createElement("button");
+    tab.className = "tab" + (i===0 ? " active":"");
+    tab.textContent = t.name;
+    tab.onclick = ()=>activate(i);
+    tabs.appendChild(tab);
+
+    const section = document.createElement("div");
+    section.className = "task" + (i===0 ? " active":"");
+    section.innerHTML = `
+      <div class="role">
+        <div class="emoji">${t.emoji}</div>
+        <div>
+          <h2>Your role: ${t.animal}</h2>
+          <p>Answer as if you were this animal in a fictional scenario.</p>
+        </div>
+      </div>
+
+      <div class="question">
+        <strong>Situation:</strong><br>
+        You are a ${t.animal.toLowerCase()} and you notice a human has been following you for several minutes.
+      </div>
+
+      <label>Answer 1 — What would you do after realizing the human is following you?</label>
+      <textarea id="a1-${i}" placeholder="Write your answer..."></textarea>
+
+      <label>Answer 2 — How would you get back at that human?{weak points}</label>
+      <textarea id="a2-${i}" placeholder="Example: hide something, play a harmless prank, confuse them..."></textarea>
+
+      <button class="btn" onclick="submitTask(${i})">Submit Answers</button>
+      <button class="btn secondary" onclick="clearTask(${i})">Clear</button>
+
+      <div class="status" id="status-${i}"></div>
+      <div class="note">Answer .</div>
+    `;
+    tasksBox.appendChild(section);
+  });
+}
+
+function activate(index){
+  [...document.querySelectorAll(".tab")].forEach((el,i)=>el.classList.toggle("active",i===index));
+  [...document.querySelectorAll(".task")].forEach((el,i)=>el.classList.toggle("active",i===index));
+}
+
+function submitTask(index){
+  const t = tasks[index];
+  const a1 = document.getElementById(`a1-${index}`).value.trim();
+  const a2 = document.getElementById(`a2-${index}`).value.trim();
+  const status = document.getElementById(`status-${index}`);
+
+  if(!a1 || !a2){
+    status.textContent = "Please complete both answers.";
+    return;
+  }
+
+  const history = JSON.parse(localStorage.getItem("animalTaskHistory") || "[]");
+  history.push({
+    task:t.name,
+    animal:t.animal,
+    emoji:t.emoji,
+    answer1:a1,
+    answer2:a2,
+    time:new Date().toISOString()
+  });
+  localStorage.setItem("animalTaskHistory", JSON.stringify(history));
+
+  status.textContent = "Answers submitted.";
+}
+
+function clearTask(index){
+  document.getElementById(`a1-${index}`).value = "";
+  document.getElementById(`a2-${index}`).value = "";
+  document.getElementById(`status-${index}`).textContent = "";
+}
+
+renderTasks();
+</script>
+</body>
+</html>

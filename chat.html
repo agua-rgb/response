@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Global Chat — Animal Roles</title>
+  <style>
+    *{box-sizing:border-box}
+    :root{
+      --bg:#0b0f1b; --panel:#151a30; --text:#f6f7fb; --muted:#9aa3bd;
+      --line:#2a3358; --accent:#28d7b0;
+    }
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text); min-height:100vh;
+      background:
+        radial-gradient(circle at 80% 10%, rgba(40,215,176,.16), transparent 30%),
+        radial-gradient(circle at 15% 70%, rgba(124,92,255,.16), transparent 32%),
+        var(--bg);
+    }
+    header{
+      padding:22px 28px; border-bottom:1px solid var(--line);
+      background:rgba(11,15,27,.88); backdrop-filter:blur(14px);
+      display:flex; align-items:center; gap:20px;
+    }
+    header h1{margin:0}.nav{margin-left:auto}
+    .nav a{
+      color:#fff;text-decoration:none;background:#222b4a;
+      padding:10px 14px;border-radius:12px;font-weight:800
+    }
+    .wrap{max-width:850px;margin:28px auto;padding:0 20px}
+    .panel{
+      background:rgba(21,26,48,.94);border:1px solid var(--line);
+      border-radius:18px;padding:20px;box-shadow:0 16px 48px rgba(0,0,0,.22)
+    }
+    .toolbar{display:flex;gap:10px;margin-bottom:18px}
+    button{
+      border:0;padding:10px 14px;border-radius:12px;
+      background:#222b4a;color:#fff;font-weight:800;cursor:pointer
+    }
+    .msg{
+      background:#10162a;border:1px solid var(--line);
+      border-radius:14px;padding:14px;margin:12px 0
+    }
+    .msg-head{
+      display:flex;justify-content:space-between;gap:12px;
+      color:var(--muted);font-size:12px;margin-bottom:7px
+    }
+    .msg strong{color:#fff}
+    .empty{color:var(--muted);text-align:center;padding:70px 10px}
+  </style>
+</head>
+<body>
+<header>
+  <h1>🌐 Global Chat</h1>
+  <div class="nav"><a href="index.html">Back to Tasks</a></div>
+</header>
+
+<div class="wrap">
+  <div class="panel">
+    <div class="toolbar">
+      <button onclick="render()">Refresh</button>
+      <button onclick="clearChat()">Clear Chat</button>
+    </div>
+    <div id="messages"></div>
+  </div>
+</div>
+
+<script>
+const messages = document.getElementById("messages");
+
+function escapeHtml(str){
+  return str.replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  })[m]);
+}
+
+function render(){
+  const history = JSON.parse(localStorage.getItem("animalTaskHistory") || "[]");
+
+  if(!history.length){
+    messages.innerHTML = '<div class="empty">No messages yet.</div>';
+    return;
+  }
+
+  messages.innerHTML = history
+    .slice()
+    .reverse()
+    .map(item => `
+      <div class="msg">
+        <div class="msg-head">
+          <span><strong>${item.emoji || "🐾"} ${escapeHtml(item.animal)}</strong> · ${escapeHtml(item.task)}</span>
+          <span>${new Date(item.time).toLocaleString()}</span>
+        </div>
+        <div>${escapeHtml(item.answer2)}</div>
+      </div>
+    `)
+    .join("");
+}
+
+function clearChat(){
+  localStorage.removeItem("animalTaskHistory");
+  render();
+}
+
+render();
+
+window.addEventListener("storage", (event)=>{
+  if(event.key === "animalTaskHistory") render();
+});
+</script>
+</body>
+</html>
