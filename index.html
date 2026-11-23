@@ -129,19 +129,19 @@ function renderTasks(){
         <div class="emoji">${t.emoji}</div>
         <div>
           <h2>Your role: ${t.animal}</h2>
-          <p>Answer as if you were this animal in a fictional scenario.</p>
+          <p>.</p>
         </div>
       </div>
 
       <div class="question">
         <strong>Situation:</strong><br>
-        You are a ${t.animal.toLowerCase()} and you notice a human has been following you for several minutes.
+        You are a ${t.animal.toLowerCase()} and you notice that a human wants to step on you. .
       </div>
 
-      <label>Answer 1 — What would you do after realizing the human is following you?</label>
+      <label>Answer 1 — What would you do after realizing that the human wants to step on you?</label>
       <textarea id="a1-${i}" placeholder="Write your answer..."></textarea>
 
-      <label>Answer 2 — How would you get back at that human?{weak points}</label>
+      <label>Answer 2 — Response 2 — How would you take revenge on that human? Where would you attack?</label>
       <textarea id="a2-${i}" placeholder="Example: hide something, play a harmless prank, confuse them..."></textarea>
 
       <button class="btn" onclick="submitTask(${i})">Submit Answers</button>
